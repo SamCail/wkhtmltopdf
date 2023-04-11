@@ -840,7 +840,18 @@ void PdfConverterPrivate::spoolPage(int page) {
 		QString type = elm.attribute("type");
 		QString tn = elm.tagName();
 		QString name = elm.attribute("name");
-		if (tn == "TEXTAREA" || type == "text" || type == "password") {
+		QString pdffiletype = elm.attribute("pdffiletype");
+		if (pdffiletype == "Signature") {
+			painter->addSignField(
+				webPrinter->elementLocation(elm).second,
+				tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
+				name,
+				tn == "TEXTAREA",
+				type == "password",
+				elm.evaluateJavaScript("this.readOnly;").toBool(),
+				elm.hasAttribute("maxlength")?elm.attribute("maxlength").toInt():-1
+				);
+		} else if (tn == "TEXTAREA" || type == "text" || type == "password") {
 			painter->addTextField(
 				webPrinter->elementLocation(elm).second,
 				tn == "TEXTAREA"?elm.toPlainText():elm.attribute("value"),
